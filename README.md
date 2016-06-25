@@ -7,6 +7,7 @@ Specifications
 
 ## General
 - Scrypt & SHA256D
+- AUXPOW merge mine capability
 - Optimized client
 
 ## Blocks
