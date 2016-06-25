@@ -1,0 +1,11 @@
+[Protocol]
+exec=argentum-qt '%u'
+protocol=argentum
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

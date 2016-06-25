@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Argentum
+Comment=Argentum P2P Cryptocurrency
+Comment[fr]=Argentum, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Argentum, eşten eşe kriptografik sanal para birimi
+Exec=argentum-qt %u
+Terminal=false
+Type=Application
+Icon=argentum128
+MimeType=x-scheme-handler/argentum;
+Categories=Office;Finance;
