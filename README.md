@@ -6,18 +6,18 @@
 Specifications
 
 ## General
-- Scrypt
+- Scrypt & SHA256D
 - Optimized client
 
 ## Blocks
 - Block size increased to 10mb
 - Signature operations per block maximum increased to 100k
-- 32 Second block time
+- 1 Minute block time
 
 The first two features are on the bitcoin hardfork wishlist. We wanted to create the **first** cryptographic currency with almost unlimited scalability. The signature operations per block were not increased as much as block size because it is unnecessary and theoretically unreachable as is.
 
 ## Difficulty
-- Retargets every 250 blocks
+- Dark Gravity Wave Algo
 
 ## Currency Creation
 - 64 million total ARG. 
@@ -31,13 +31,7 @@ We opted for a fair launch to let everyone start mining at the same time.
 - Block 1000-1500: 2 ARG
 - Block 1500+: block reward random from 1-5. 
 
-> This sort of configuration is more realistic and adds additional security to the network by adding more variability. 
-> It also discourages difficulty hopping.
-
-## Random block rewards
-
-> Rewards are not completely random but deterministic random. Argentum uses the last block hash as a seed to generate a "random" 
-> number. The same number always results from a given seed so the network will stay synced.
+- Block 1800000: block reward fixed to 3.
 
 ## Security
 - Mined blocks mature after 30 confirms
@@ -46,18 +40,6 @@ We opted for a fair launch to let everyone start mining at the same time.
 ## Ports
 Listen Port: 13580
 RPC Port: 13581
-
-## Development
-There will be blocks mined for funding an upcoming currency exchange platform, marketplace, and a gaming platform as well as development of a foundation to support Argentum. More details will be announced.
-
-We will be distributing 25 coins to the first 1000 people to post in the initial promotional giveaway thread as the use for the first 25,000 coins. We believe this will help create  a balance in the economy and add value to the currency.
-
-## Team
-We have a team that will build core services and useful applications for Argentum. We welcome anyone to join the team and help with development.
-
-- Core Programmers: 2
-- Web developers : 2
-- Graphic designer: 1
 
 ## Mining
 You can either solo mine or mine in a pool.
@@ -75,3 +57,10 @@ You can either solo mine or mine in a pool.
 > 2. Launch your miner
 >    Example: cgminer.exe -ñscrypt -o POOL.COM -u POOL.USERNAME -p POOLPASSWORD
 >    Example P2pool: cgminer.exe --scrypt -o P2POOL.COM -u ARGENTUMADDRESS -p ANYTHING
+
+## Conf Settings
+if you are setting up a pool or want to solo mine in SHA add the following to the conf file
+algo=sha256d
+
+If you wnat to set the daemon to scrypt, remove the algo= setting altogether or set it to algo=scrypt
+the default operation is scrypt.
