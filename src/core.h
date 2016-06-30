@@ -81,7 +81,7 @@ static const int BLOCK_VERSION_CHAIN_END = 		(1 << 30);
 static const int BLOCK_VERSION_BASE_MASK = 0x000000ff;
 
 // Argentum switch to Dark Gravity Wave and Auxillary PoW
-static const int64_t Version4StartHeight = 18000000;
+static const int64_t Version4StartHeight = 1825000;
 
 // Argentum aux chain ID = 0x0062 (98)
 static const int AUXPOW_CHAIN_ID = 0x0062;
