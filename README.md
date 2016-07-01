@@ -65,3 +65,9 @@ if you are setting up a pool or want to solo mine in SHA add the following to th
 algo=sha256
 
 If you wnat to set the daemon to scrypt, set the algo= to algo=scrypt
+
+## Donation Addresses
+Please Donate a little to the cause!
+> ARG Donation Address: ATM1imaiPtFT5K8F2tsPh4RSpw7ADk9a8G
+
+> BTC Donation Address: 1LxXw9CRunb5mJfa99aTWQMCqmbroVBUxi
