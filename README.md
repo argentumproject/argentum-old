@@ -40,6 +40,7 @@ We opted for a fair launch to let everyone start mining at the same time.
 
 ## Ports
 Listen Port: 13580
+
 RPC Port: 13581
 
 ## Mining
