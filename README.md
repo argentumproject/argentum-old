@@ -32,7 +32,7 @@ We opted for a fair launch to let everyone start mining at the same time.
 - Block 1000-1500: 2 ARG
 - Block 1500+: block reward random from 1-5. 
 
-- Block 1800000: block reward fixed to 3.
+- Block 1825000: block reward fixed to 3.
 
 ## Security
 - Mined blocks mature after 30 confirms
@@ -61,7 +61,6 @@ You can either solo mine or mine in a pool.
 
 ## Conf Settings
 if you are setting up a pool or want to solo mine in SHA add the following to the conf file
-algo=sha256d
+algo=sha256
 
-If you wnat to set the daemon to scrypt, remove the algo= setting altogether or set it to algo=scrypt
-the default operation is scrypt.
+If you wnat to set the daemon to scrypt, set the algo= to algo=scrypt
