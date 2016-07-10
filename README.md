@@ -62,7 +62,7 @@ You can either solo mine or mine in a pool.
 
 ## Conf Settings
 if you are setting up a pool or want to solo mine in SHA add the following to the conf file
-algo=sha256
+algo=sha256d
 
 If you wnat to set the daemon to scrypt, set the algo= to algo=scrypt
 
