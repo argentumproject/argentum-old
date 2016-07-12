@@ -51,7 +51,7 @@ using namespace std;
 using namespace boost;
 
 namespace {
-    const int MAX_OUTBOUND_CONNECTIONS = 8;
+    const int MAX_OUTBOUND_CONNECTIONS = 32;
 
     struct ListenSocket {
         SOCKET socket;
@@ -80,7 +80,7 @@ uint64_t nLocalHostNonce = 0;
 static std::vector<ListenSocket> vhListenSocket;
 CAddrMan addrman;
 int nMaxConnections = 125;
-int nMaxOutboundConnections = 8;
+int nMaxOutboundConnections = 32;
 
 vector<CNode*> vNodes;
 CCriticalSection cs_vNodes;
