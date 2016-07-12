@@ -68,20 +68,35 @@ If you want to set the daemon to scrypt, set the algo= to algo=scrypt
 Add these nodes
 
 addnode=52.50.240.238
+
 addnode=149.210.234.234
+
 addnode=192.168.0.9,
+
 addnode=148.251.19.213
+
 addnode=104.131.142.198
+
 addnode=82.176.15.155
+
 addnode=144.76.71.141
+
 addnode=82.29.4.122
+
 addnode=98.115.147.74
+
 addnode=87.98.185.244
+
 addnode=52.58.50.77
+
 addnode=178.237.35.34
+
 addnode=104.131.142.198
+
 addnode=162.251.173.179
+
 addnode=24.141.165.231
+
 addnode=162.255.117.105
 
 ##Bootstrap & Syncing
