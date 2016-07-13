@@ -72,7 +72,10 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : string())));
-    obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+	obj.push_back(Pair("pow_algo_id",      miningAlgo));
+    obj.push_back(Pair("pow_algo",         GetAlgoName(miningAlgo)));
+    obj.push_back(Pair("difficulty",       (double)GetDifficulty(NULL, miningAlgo)));
+    obj.push_back(Pair("difficulty_sha256", (double)GetDifficulty(NULL, ALGO_SHA256D)));
     obj.push_back(Pair("testnet",       TestNet()));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {

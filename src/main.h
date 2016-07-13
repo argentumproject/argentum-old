@@ -78,9 +78,9 @@ static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 128;
 /** Timeout in seconds before considering a block download peer unresponsive. */
 static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
 
-static const int V3_FORK = 1028000;
+static const int V3_FORK = 1840000;
 static const int MAX_BLOCK_ALGO_COUNT = 3;
-const int64_t multiAlgoDiffChangeTarget = 960000; // block where multi-algo work weighting starts 145000
+const int64_t multiAlgoDiffChangeTarget = 1840000; // block where multi-algo work weighting starts 145000
 
 /** AuxPow Block versions for sanity checks. */
 /** bare AuxPoW block version which will be modulated further. */
@@ -193,6 +193,10 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState &state);
 int64_t GetBlockValue(int nHeight, int64_t nFees, uint256 prevHash);
+
+
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, int algo);
+const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, int algo);
 
 unsigned int GetNextWorkRequired_Legacy(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo);
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo);

@@ -1241,6 +1241,27 @@ void static PruneOrphanBlocks()
     mapOrphanBlocks.erase(hash);
 }
 
+
+
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, int algo)
+{
+    while (pindex && pindex->pprev && (pindex->GetAlgo() != algo))
+        pindex = pindex->pprev;
+    return pindex;
+}
+
+const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, int algo)
+{
+    for (;;)
+    {
+        if (!pindex)
+            return NULL;
+        if (pindex->GetAlgo() == algo)
+            return pindex;
+        pindex = pindex->pprev;
+    }
+}
+
 int static generateMTRandom(unsigned int s, int range)
 {
     boost::mt19937 gen(s);

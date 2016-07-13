@@ -21,22 +21,33 @@ void TxToJSON(const CTransaction& tx, const uint256 hashBlock, Object& entry);
 
 void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 
-double GetDifficulty(const CBlockIndex* blockindex)
+double GetDifficulty(const CBlockIndex* blockindex, int algo)
 {
+    unsigned int nBits;
+
     // Floating point number that is a multiple of the minimum difficulty,
     // minimum difficulty = 1.0.
     if (blockindex == NULL)
     {
-        if (chainActive.Tip() == NULL)
-            return 1.0;
+        CBlockIndex* tip = chainActive.Tip();
+        if (tip == NULL)
+            nBits = Params().ProofOfWorkLimit(ALGO_SCRYPT).GetCompact();
         else
-            blockindex = chainActive.Tip();
+        {
+            blockindex = GetLastBlockIndexForAlgo(tip, algo);
+            if (blockindex == NULL)
+                nBits = Params().ProofOfWorkLimit(algo).GetCompact();
+            else
+                nBits = blockindex->nBits;
+        }
     }
+    else
+        nBits = blockindex->nBits;
 
-    int nShift = (blockindex->nBits >> 24) & 0xff;
+    int nShift = (nBits >> 24) & 0xff;
 
     double dDiff =
-        (double)0x0000ffff / (double)(blockindex->nBits & 0x00ffffff);
+        (double)0x0000ffff / (double)(nBits & 0x00ffffff);
 
     while (nShift < 29)
     {
@@ -51,7 +62,6 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
     return dDiff;
 }
-
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex)
 {
@@ -103,7 +113,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex)
     result.push_back(Pair("time", block.GetBlockTime()));
     result.push_back(Pair("nonce", (uint64_t)block.nNonce));
     result.push_back(Pair("bits", HexBits(block.nBits)));
-    result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
+    result.push_back(Pair("difficulty", GetDifficulty(blockindex, miningAlgo)));
     result.push_back(Pair("chainwork", blockindex->nChainWork.GetHex()));
 
     if (blockindex->pprev)
@@ -160,7 +170,7 @@ Value getdifficulty(const Array& params, bool fHelp)
             + HelpExampleRpc("getdifficulty", "")
         );
 
-    return GetDifficulty();
+    return GetDifficulty(NULL, miningAlgo);
 }
 
 
@@ -498,7 +508,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     obj.push_back(Pair("chain",         chain));
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
     obj.push_back(Pair("bestblockhash", chainActive.Tip()->GetBlockHash().GetHex()));
-    obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+    obj.push_back(Pair("difficulty",    (double)GetDifficulty(NULL, miningAlgo)));
     obj.push_back(Pair("verificationprogress", Checkpoints::GuessVerificationProgress(chainActive.Tip())));
     obj.push_back(Pair("chainwork",     chainActive.Tip()->nChainWork.GetHex()));
     return obj;
