@@ -418,9 +418,7 @@ bloom.o: bloom.cpp /usr/include/stdc-predef.h bloom.h serialize.h \
  /usr/include/boost/date_time/posix_time/posix_time_config.hpp \
  /usr/include/boost/limits.hpp /usr/include/c++/5/limits \
  /usr/include/boost/config/no_tr1/cmath.hpp /usr/include/c++/5/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
- /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -2000,10 +1998,6 @@ allocators.h:
 /usr/include/c++/5/cmath:
 
 /usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
 /usr/include/x86_64-linux-gnu/bits/huge_val.h:
 

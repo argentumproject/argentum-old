@@ -3361,8 +3361,8 @@ Address: %4
     </message>
     <message>
         <location line="-46"/>
-        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 44556)</source>
-        <translation>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 44556)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 40555)</source>
+        <translation>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 40555)</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -3396,8 +3396,8 @@ Address: %4
     </message>
     <message>
         <location line="+50"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 44555)</source>
-        <translation>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 44555)</translation>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 40556)</source>
+        <translation>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 40556)</translation>
     </message>
     <message>
         <location line="+51"/>

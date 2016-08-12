@@ -2601,8 +2601,8 @@ Wohin: %4
         <translation>Zwischnspeichagreß fia de Datenbank in megabeits (sunsta: 25)</translation>
     </message>
     <message>
-        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 44556)</source>
-        <translation>Auf Vabindungen am &lt;port&gt; lauschn (sunsta: 13580 bzw. testnet: 44556)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 40555)</source>
+        <translation>Auf Vabindungen am &lt;port&gt; lauschn (sunsta: 13580 bzw. testnet: 40555)</translation>
     </message>
     <message>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
@@ -2629,7 +2629,7 @@ Wohin: %4
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 44555)</source>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 40556)</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2763,7 +2763,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Argentum Alert&quot; admin@foo
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Connect to JSON-RPC on &lt;port&gt; (default: 13581 or testnet: 44555)</source>
+        <source>Connect to JSON-RPC on &lt;port&gt; (default: 13581 or testnet: 40556)</source>
         <translation type="unfinished"/>
     </message>
     <message>

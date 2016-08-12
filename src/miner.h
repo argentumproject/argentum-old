@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include "auxpow.h"
 
 class CBlock;
 class CBlockIndex;

@@ -1549,10 +1549,114 @@ unsigned int static DarkGravityWave_Upd(const CBlockIndex* pindexLast, const CBl
     return bnNew.GetCompact();
 }
 
+static const int64_t nAveragingInterval = 10; // 10 blocks
+static const int64_t multiAlgoTargetSpacing = 90; // 90 Seconds (NUM_ALGOS * 45 seconds)
+static const int64_t nAveragingTargetTimespan = nAveragingInterval * multiAlgoTargetSpacing; // 900 sec or 15 minutes for 20 blocks
+
+static const int64_t nMaxAdjustDownV2 = 22; // 22% adjustment down 
+static const int64_t nMaxAdjustUpV2 = 14; // 14% adjustment up
+static const int64_t nLocalDifficultyAdjustment = 12; // 12% down, 12% up
+
+static const int64_t nMinActualTimespanV2 = nAveragingTargetTimespan * (100 - nMaxAdjustUpV2) / 100;
+static const int64_t nMaxActualTimespanV2 = nAveragingTargetTimespan * (100 + nMaxAdjustDownV2) / 100;
+
+unsigned int StabilX(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo)
+{
+    unsigned int nProofOfWorkLimit = Params().ProofOfWorkLimit(algo).GetCompact();
+
+    // Genesis block
+    if (pindexLast == NULL)
+        return nProofOfWorkLimit;
+    
+    const CBlockIndex* pindexPrev = GetLastBlockIndexForAlgo(pindexLast, algo);
+    
+    // find first block in averaging interval
+    // Go back by what we want to be nAveragingInterval blocks per algo
+    const CBlockIndex* pindexFirst = pindexLast;
+    for (int i = 0; pindexFirst && i < NUM_ALGOS*nAveragingInterval; i++)
+    {
+        pindexFirst = pindexFirst->pprev;
+    }
+    const CBlockIndex* pindexPrevAlgo = GetLastBlockIndexForAlgo(pindexLast, algo);
+    if (pindexPrevAlgo == NULL || pindexFirst == NULL)
+    {
+        if (fDebug)
+        {
+            LogPrintf("StabilX(Algo=%d): not enough blocks available, using default POW limit\n");
+        }
+        return nProofOfWorkLimit; // not enough blocks available
+    }
+
+    // Limit adjustment step
+    // Use medians to prevent time-warp attacks
+    int64_t nActualTimespan = pindexLast->GetMedianTimePast() - pindexFirst->GetMedianTimePast();
+    nActualTimespan = nAveragingTargetTimespan + (nActualTimespan - nAveragingTargetTimespan)/6;
+    if (fDebug)
+    {
+        LogPrintf("StabilX(Algo=%d): nActualTimespan = %d before bounds (%d - %d)\n", algo, nActualTimespan, nMinActualTimespanV2, nMaxActualTimespanV2);
+    }
+    if (nActualTimespan < nMinActualTimespanV2)
+        nActualTimespan = nMinActualTimespanV2;
+    if (nActualTimespan > nMaxActualTimespanV2)
+        nActualTimespan = nMaxActualTimespanV2;
+    if (fDebug)
+    {
+        LogPrintf("StabilX(Algo=%d): nActualTimespan = %d after bounds (%d - %d)\n", algo, nActualTimespan, nMinActualTimespanV2, nMaxActualTimespanV2);
+    }
+    
+    // Global retarget
+    CBigNum bnNew;
+    bnNew.SetCompact(pindexPrevAlgo->nBits);
+    bnNew *= nActualTimespan;
+    bnNew /= nAveragingTargetTimespan;
+
+    // Per-algo retarget
+    int nAdjustments = pindexPrevAlgo->nHeight - pindexLast->nHeight + NUM_ALGOS - 1;
+    if (nAdjustments > 0)
+    {
+        for (int i = 0; i < nAdjustments; i++)
+        {
+            bnNew *= 100;
+            bnNew /= (100 + nLocalDifficultyAdjustment);
+        }
+    }
+    else if (nAdjustments < 0)
+    {
+        for (int i = 0; i < -nAdjustments; i++)
+        {
+            bnNew *= (100 + nLocalDifficultyAdjustment);
+            bnNew /= 100;
+        }
+    }
+
+    if (bnNew > Params().ProofOfWorkLimit(algo))
+    {
+        if (fDebug)
+        {
+            LogPrintf("StabilX(Algo=%d): Adjusted target large than limit, so is now POW limit\n", algo);
+        }
+        bnNew = Params().ProofOfWorkLimit(algo);
+    }
+
+    /// debug print
+    if (fDebug)
+    {
+        LogPrintf("StabilX(Algo=%d): RETARGET\n", algo);
+        LogPrintf("StabilX(Algo=%d): nTargetTimespan = %d, nActualTimespan = %d\n", algo, nAveragingTargetTimespan, nActualTimespan);
+        LogPrintf("StabilX(Algo=%d): Before: %08x  %s\n", algo, pindexPrev->nBits, CBigNum().SetCompact(pindexPrev->nBits).getuint256().ToString());
+        LogPrintf("StabilX(Algo=%d): After:  %08x  %s\n", algo, bnNew.GetCompact(), bnNew.getuint256().ToString());
+    }
+
+    return bnNew.GetCompact();
+}
+
+static const int64_t SwitchToStabilX = 1930000;
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlock *pblock, int algo)
 {
-        if (chainActive.Tip()->nHeight >= DGW3_Start_Block) {
+		if (chainActive.Tip()->nHeight >= SwitchToStabilX) {
+			return GetNextWorkRequiredM(pindexLast, pblock, algo);
+        } else if (chainActive.Tip()->nHeight >= DGW3_Start_Block) {
 			return DarkGravityWave3(pindexLast, pblock, algo);
         } else if (chainActive.Tip()->nHeight >= Version4StartHeight){
             return DarkGravityWave_Upd(pindexLast, pblock, algo);
@@ -1562,6 +1666,10 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlock *pb
 
 }
 
+unsigned int GetNextWorkRequiredM(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo)
+{ 
+    return StabilX(pindexLast, pblock, algo);
+}
 
 unsigned int GetNextWRKReq(const CBlockIndex* pindexLast, const CBlock *pblock, int algo)
 {
@@ -1633,7 +1741,7 @@ void CheckForkWarningConditions()
     if (pindexBestForkTip && chainActive.Height() - pindexBestForkTip->nHeight >= 360)
         pindexBestForkTip = NULL;
 
-    if (pindexBestForkTip || (pindexBestInvalid && pindexBestInvalid->nChainWork > chainActive.Tip()->nChainWork + (chainActive.Tip()->GetBlockWork() * 30).getuint256()))
+    if (pindexBestForkTip || (pindexBestInvalid && pindexBestInvalid->nChainWork > chainActive.Tip()->nChainWork + (chainActive.Tip()->GetBlockWorkAdjusted() * 30).getuint256()))
     {
         if (!fLargeWorkForkFound)
         {
@@ -1689,7 +1797,7 @@ void CheckForkWarningConditionsOnNewFork(CBlockIndex* pindexNewForkTip)
     // We define it this way because it allows us to only store the highest fork tip (+ base) which meets
     // the 7-block condition and from this always have the most-likely-to-cause-warning fork
     if (pfork && (!pindexBestForkTip || (pindexBestForkTip && pindexNewForkTip->nHeight > pindexBestForkTip->nHeight)) &&
-            pindexNewForkTip->nChainWork - pfork->nChainWork > (pfork->GetBlockWork() * 7).getuint256() &&
+            pindexNewForkTip->nChainWork - pfork->nChainWork > (pfork->GetBlockWorkAdjusted() * 7).getuint256() &&
             chainActive.Height() - pindexNewForkTip->nHeight < 72)
     {
         pindexBestForkTip = pindexNewForkTip;
@@ -2249,7 +2357,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
       Checkpoints::GuessVerificationProgress(chainActive.Tip()));
 
     // Check the version of the last 100 blocks to see if we need to upgrade:
-    if (!fIsInitialDownload)
+/*  if (!fIsInitialDownload)
     {
         int nUpgraded = 0;
         const CBlockIndex* pindex = chainActive.Tip();
@@ -2264,7 +2372,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
         if (nUpgraded > 100/2)
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
             strMiscWarning = _("Warning: This version is obsolete, upgrade required!");
-    }
+    }   */
 }
 
 // Disconnect chainActive's tip.
@@ -2485,7 +2593,7 @@ CBlockIndex* AddToBlockIndex(CBlockHeader& block)
         pindexNew->pprev = (*miPrev).second;
         pindexNew->nHeight = pindexNew->pprev->nHeight + 1;
     }
-    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + pindexNew->GetBlockWork().getuint256();
+    pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + pindexNew->GetBlockWorkAdjusted().getuint256();
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
 
     return pindexNew;
@@ -2560,8 +2668,7 @@ int GetAuxPowStartBlock()
 
 bool CBlockHeader::CheckProofOfWork(int nHeight) const
 {
-	int algo = GetAlgo();
-	
+    int algo = GetAlgo();
     if (nHeight >= GetAuxPowStartBlock())
     {
         // Prevent same work from being submitted twice:
@@ -2569,20 +2676,21 @@ bool CBlockHeader::CheckProofOfWork(int nHeight) const
         // - parent block must not have the same chain ID (see CAuxPow::Check)
         // - index of this chain in chain merkle tree must be pre-determined (see CAuxPow::Check)
         if (!TestNet() && nHeight != INT_MAX && GetChainID() != AUXPOW_CHAIN_ID)
-            return error("CheckProofOfWork() : block does not have our chain ID");
+            return error("CheckProofOfWork() : block (chainID=%d) does not have our chain ID (chainID=%d)", GetChainID(),AUXPOW_CHAIN_ID);
 
         if (auxpow.get() != NULL)
         {
             if (!auxpow->Check(GetHash(), GetChainID()))
                 return error("CheckProofOfWork() : AUX POW is not valid");
             // Check proof of work matches claimed amount
-            if (!::CheckProofOfWork(auxpow->GetParentBlockHash(algo), nBits,algo))
+            if (!::CheckProofOfWork(auxpow->GetParentBlockHash(algo), nBits, algo))
                 return error("CheckProofOfWork() : AUX proof of work failed");
         }
         else
         {
             // Check proof of work matches claimed amount
-            if (!::CheckProofOfWork(GetPoWHash(algo), nBits,algo))
+            // LogPrintf("CBlockHeader::CheckProofOfWork - Algo %d, Height %d \r\n",algo, nHeight);
+            if (!::CheckProofOfWork(GetPoWHash(algo), nBits, algo))
                 return error("CheckProofOfWork() : proof of work failed");
         }
     }
@@ -2698,6 +2806,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, int nH
 {
     // Check proof of work matches claimed amount
     if (fCheckPOW && !block.CheckProofOfWork(nHeight))
+    //if (fCheckPOW && !CheckProofOfWork(block.GetPoWHash(block.GetAlgo()), block.nBits, block.GetAlgo()))
         return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                          REJECT_INVALID, "high-hash");
 
@@ -2705,27 +2814,6 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, int nH
     if (block.GetBlockTime() > GetAdjustedTime() + 2 * 60 * 60)
         return state.Invalid(error("CheckBlockHeader() : block timestamp too far in the future"),
                              REJECT_INVALID, "time-too-new");
-
-    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
-    if (pcheckpoint && block.hashPrevBlock != (chainActive.Tip() ? chainActive.Tip()->GetBlockHash() : uint256(0)))
-    {
-        // Extra checks to prevent "fill up memory by spamming with bogus blocks"
-        int64_t deltaTime = block.GetBlockTime() - pcheckpoint->nTime;
-        if (deltaTime < 0)
-        {
-            return state.DoS(100, error("CheckBlockHeader() : block with timestamp before last checkpoint"),
-                             REJECT_CHECKPOINT, "time-too-old");
-        }
-        CBigNum bnNewBlock;
-        bnNewBlock.SetCompact(block.nBits);
-        CBigNum bnRequired;
-        bnRequired.SetCompact(ComputeMinWork(pcheckpoint->nBits, deltaTime, block.GetAlgo()));
-        if (bnNewBlock > bnRequired)
-        {
-            return state.DoS(100, error("CheckBlockHeader() : block with too little proof-of-work"),
-                             REJECT_INVALID, "bad-diffbits");
-        }
-    }
 
     return true;
 }
@@ -2811,12 +2899,46 @@ bool AcceptBlockHeader(CBlockHeader& block, CValidationState& state, CBlockIndex
             return state.DoS(10, error("AcceptBlock() : prev block not found"), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         nHeight = pindexPrev->nHeight+1;
-#if 0
+
+            // Check count of sequence of the same algorithm
+
+    if (TestNet() || (nHeight > mAlgo_FORK))
+    {
+        int nAlgo = block.GetAlgo();
+        int nAlgoCount = 1;
+        CBlockIndex* piPrev = pindexPrev;
+        while (piPrev && (nAlgoCount <= MAX_BLOCK_ALGO_COUNT))
+        {
+            if (piPrev->GetAlgo() != nAlgo)
+                break;
+            nAlgoCount++;
+            piPrev = piPrev->pprev;
+        }
+        if (nAlgoCount > MAX_BLOCK_ALGO_COUNT)
+        {
+            return state.DoS(100, error("AcceptBlock() : Too Many Blocks From the Same Algo"), REJECT_INVALID, "algo-toomany");
+        }
+    }
+
+        LogPrintf("Checking Block %d with Algo %d \n", nHeight, block.GetAlgo());
+        if (block.GetAlgo() == ALGO_SCRYPT)  { LogPrintf("Algo is Scrypt \n ");}
+        if (block.GetAlgo() == ALGO_SHA256D) { LogPrintf("Algo is SHA256 \n");}
+
         // Check proof of work
-        if (block.nBits != GetNextWorkRequired(pindexPrev, &block, block.GetAlgo()))
+        if ((nHeight > SwitchToStabilX) && (block.nBits != GetNextWorkRequiredM(pindexPrev, &block, block.GetAlgo())))
             return state.DoS(100, error("AcceptBlock() : incorrect proof of work"),
                              REJECT_INVALID, "bad-diffbits");
-#endif
+
+        #if 0 
+     if (TestNet() && block.GetAlgo() != ALGO_SCRYPT )
+            return state.Invalid(error("AcceptBlock() : incorrect hashing algo, only scrypt accepted until block %u", mAlgo_FORK),
+                REJECT_INVALID, "bad-hashalgo");
+
+     else if(!TestNet() && nHeight < mAlgo_FORK && block.GetAlgo() != ALGO_SCRYPT)
+               return state.Invalid(error("AcceptBlock() : incorrect hashing algo, only scrypt accepted until block %u", mAlgo_FORK),
+                           REJECT_INVALID, "bad-hashalgo");
+        #endif
+
         // Check timestamp against prev
         if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
             return state.Invalid(error("AcceptBlock() : block's timestamp is too early"),
@@ -3027,6 +3149,28 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
             mapAlreadyAskedFor.erase(CInv(MSG_BLOCK, hash));
         return error("ProcessBlock() : CheckBlock FAILED");
     }
+    
+    CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
+    if (pcheckpoint && pblock->hashPrevBlock != (chainActive.Tip() ? chainActive.Tip()->GetBlockHash() : uint256(0)))
+    {
+        // Extra checks to prevent "fill up memory by spamming with bogus blocks"
+        int64_t deltaTime = pblock->GetBlockTime() - pcheckpoint->nTime;
+        if (deltaTime < 0)
+        {
+            return state.DoS(100, error("ProcessBlock() : block with timestamp before last checkpoint"),
+                             REJECT_CHECKPOINT, "time-too-old");
+        }
+        CBigNum bnNewBlock;
+        bnNewBlock.SetCompact(pblock->nBits);
+        CBigNum bnRequired;
+        bnRequired.SetCompact(ComputeMinWork(pcheckpoint->nBits, deltaTime, GetAlgo(pblock->nVersion)));
+        if (bnNewBlock > bnRequired)
+        {
+            return state.DoS(100, error("ProcessBlock() : block with too little proof-of-work"),
+                             REJECT_INVALID, "bad-diffbits");
+        }
+    }
+
 
     // If we don't already have its previous block (with full data), shunt it off to holding area until we get it
     std::map<uint256, CBlockIndex*>::iterator it = mapBlockIndex.find(pblock->hashPrevBlock);
@@ -3340,7 +3484,7 @@ bool static LoadBlockIndexDB()
     BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
     {
         CBlockIndex* pindex = item.second;
-        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + pindex->GetBlockWork().getuint256();
+        pindex->nChainWork = (pindex->pprev ? pindex->pprev->nChainWork : 0) + pindex->GetBlockWorkAdjusted().getuint256();
         pindex->nChainTx = (pindex->pprev ? pindex->pprev->nChainTx : 0) + pindex->nTx;
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS))
             setBlockIndexValid.insert(pindex);

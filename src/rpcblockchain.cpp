@@ -73,6 +73,10 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex)
     result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
+    int algo = block.GetAlgo();
+    result.push_back(Pair("pow_algo_id", algo));
+    result.push_back(Pair("pow_algo", GetAlgoName(algo)));
+    result.push_back(Pair("pow_hash", block.GetPoWHash(algo).GetHex()));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
     if (block.nVersion & BLOCK_VERSION_AUXPOW) {
         // this block includes auxpow
@@ -191,7 +195,7 @@ Value getrawmempool(const Array& params, bool fHelp)
             "{                           (json object)\n"
             "  \"transactionid\" : {       (json object)\n"
             "    \"size\" : n,             (numeric) transaction size in bytes\n"
-            "    \"fee\" : n,              (numeric) transaction fee in Argentums\n"
+            "    \"fee\" : n,              (numeric) transaction fee in Argentum\n"
             "    \"time\" : n,             (numeric) local time transaction entered pool in seconds since 1 Jan 1970 GMT\n"
             "    \"height\" : n,           (numeric) block height when transaction entered pool\n"
             "    \"startingpriority\" : n, (numeric) priority when transaction entered pool\n"
@@ -395,7 +399,7 @@ Value gettxout(const Array& params, bool fHelp)
             "     \"reqSigs\" : n,          (numeric) Number of required signatures\n"
             "     \"type\" : \"pubkeyhash\", (string) The type, eg pubkeyhash\n"
             "     \"addresses\" : [          (array of string) array of argentum addresses\n"
-            "        \"bitcoinaddress\"     (string) bitcoin address\n"
+            "        \"argentumaddress\"     (string) argentum address\n"
             "        ,...\n"
             "     ]\n"
             "  },\n"

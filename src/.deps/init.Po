@@ -452,9 +452,7 @@ init.o: init.cpp /usr/include/stdc-predef.h bitcoin-config.h init.h \
  /usr/include/boost/date_time/posix_time/posix_time_config.hpp \
  /usr/include/boost/limits.hpp /usr/include/c++/5/limits \
  /usr/include/boost/config/no_tr1/cmath.hpp /usr/include/c++/5/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
- /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -1515,19 +1513,18 @@ init.o: init.cpp /usr/include/stdc-predef.h bitcoin-config.h init.h \
  /usr/include/openssl/comp.h /usr/include/openssl/x509.h \
  /usr/include/openssl/buffer.h /usr/include/openssl/evp.h \
  /usr/include/openssl/objects.h /usr/include/openssl/obj_mac.h \
- /usr/include/openssl/asn1.h /usr/include/openssl/fips.h \
- /usr/include/openssl/ec.h /usr/include/openssl/ecdsa.h \
- /usr/include/openssl/ecdh.h /usr/include/openssl/rsa.h \
- /usr/include/openssl/dsa.h /usr/include/openssl/dh.h \
- /usr/include/openssl/x509_vfy.h /usr/include/openssl/pkcs7.h \
- /usr/include/openssl/pem.h /usr/include/openssl/pem2.h \
- /usr/include/openssl/hmac.h /usr/include/openssl/kssl.h \
- /usr/include/openssl/ssl2.h /usr/include/openssl/ssl3.h \
- /usr/include/openssl/tls1.h /usr/include/openssl/dtls1.h \
- /usr/include/openssl/pqueue.h /usr/include/openssl/ssl23.h \
- /usr/include/openssl/srtp.h /usr/include/openssl/engine.h \
- /usr/include/openssl/ui.h /usr/include/openssl/err.h \
- /usr/include/openssl/x509v3.h \
+ /usr/include/openssl/asn1.h /usr/include/openssl/ec.h \
+ /usr/include/openssl/ecdsa.h /usr/include/openssl/ecdh.h \
+ /usr/include/openssl/rsa.h /usr/include/openssl/dsa.h \
+ /usr/include/openssl/dh.h /usr/include/openssl/x509_vfy.h \
+ /usr/include/openssl/pkcs7.h /usr/include/openssl/pem.h \
+ /usr/include/openssl/pem2.h /usr/include/openssl/hmac.h \
+ /usr/include/openssl/kssl.h /usr/include/openssl/ssl2.h \
+ /usr/include/openssl/ssl3.h /usr/include/openssl/tls1.h \
+ /usr/include/openssl/dtls1.h /usr/include/openssl/pqueue.h \
+ /usr/include/openssl/ssl23.h /usr/include/openssl/srtp.h \
+ /usr/include/openssl/engine.h /usr/include/openssl/ui.h \
+ /usr/include/openssl/err.h /usr/include/openssl/x509v3.h \
  /usr/include/boost/asio/ssl/detail/openssl_init.hpp \
  /usr/include/boost/asio/ssl/detail/impl/openssl_init.ipp \
  /usr/include/boost/asio/ssl/detail/password_callback.hpp \
@@ -1655,9 +1652,8 @@ init.o: init.cpp /usr/include/stdc-predef.h bitcoin-config.h init.h \
  ../src/leveldb/include/leveldb/status.h \
  ../src/leveldb/include/leveldb/options.h \
  ../src/leveldb/include/leveldb/write_batch.h ui_interface.h \
- /usr/include/boost/signals2/last_value.hpp db.h /usr/include/db_cxx.h \
- /usr/include/db.h /usr/include/inttypes.h wallet.h crypter.h keystore.h \
- walletdb.h /usr/include/boost/algorithm/string/predicate.hpp \
+ /usr/include/boost/signals2/last_value.hpp \
+ /usr/include/boost/algorithm/string/predicate.hpp \
  /usr/include/boost/algorithm/string/config.hpp \
  /usr/include/boost/range/as_literal.hpp \
  /usr/include/boost/range/detail/str_types.hpp \
@@ -2738,10 +2734,6 @@ allocators.h:
 /usr/include/c++/5/cmath:
 
 /usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
 /usr/include/x86_64-linux-gnu/bits/huge_val.h:
 
@@ -5073,8 +5065,6 @@ rpcprotocol.h:
 
 /usr/include/openssl/asn1.h:
 
-/usr/include/openssl/fips.h:
-
 /usr/include/openssl/ec.h:
 
 /usr/include/openssl/ecdsa.h:
@@ -5386,22 +5376,6 @@ leveldbwrapper.h:
 ui_interface.h:
 
 /usr/include/boost/signals2/last_value.hpp:
-
-db.h:
-
-/usr/include/db_cxx.h:
-
-/usr/include/db.h:
-
-/usr/include/inttypes.h:
-
-wallet.h:
-
-crypter.h:
-
-keystore.h:
-
-walletdb.h:
 
 /usr/include/boost/algorithm/string/predicate.hpp:
 

@@ -116,15 +116,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, int algo)
         return NULL;
     CBlock *pblock = &pblocktemplate->block; // pointer for convenience
     
+    // Set block version
+    // pblock->nVersion = CBlockHeader::CURRENT_VERSION;
+    CBlockIndex* pindexPrev = chainActive.Tip();
+    
     switch (algo)
     {
         case ALGO_SCRYPT:
             break;
         case ALGO_SHA256D:
             pblock->nVersion |= BLOCK_VERSION_SHA256D;
-            break;
-        case ALGO_X11:
-            pblock->nVersion |= BLOCK_VERSION_X11;
             break;
         default:
             error("CreateNewBlock: bad algo");
@@ -341,7 +342,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, int algo)
 
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
-        LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+        LogPrintf("CreateNewBlock(): total size %u\n, nVersion %u\n", nBlockSize, pblock->nVersion);
 
         pblock->vtx[0].vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees, pindexPrev->GetBlockHash());
         pblocktemplate->vTxFees[0] = -nFees;
@@ -437,6 +438,41 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
 double dHashesPerSec = 0.0;
 int64_t nHPSTimerStart = 0;
 
+//
+// ScanHash scans nonces looking for a hash with at least some zero bits.
+// It operates on big endian data.  Caller does the byte reversing.
+// All input buffers are 16-byte aligned.  nNonce is usually preserved
+// between calls, but periodically or if nNonce is 0xffff0000 or above,
+// the block is rebuilt and nNonce starts over at zero.
+//
+unsigned int static ScanHash_CryptoPP(char* pmidstate, char* pdata, char* phash1, char* phash, unsigned int& nHashesDone)
+{
+    unsigned int& nNonce = *(unsigned int*)(pdata + 12);
+    for (;;)
+    {
+        // Crypto++ SHA256
+        // Hash pdata using pmidstate as the starting state into
+        // pre-formatted buffer phash1, then hash phash1 into phash
+        nNonce++;
+        SHA256Transform(phash1, pdata, pmidstate);
+        SHA256Transform(phash, phash1, pSHA256InitState);
+
+        // Return the nonce if the hash has at least some zero bits,
+        // caller will check if it has enough to reach the target
+        if (((unsigned short*)phash)[14] == 0)
+            return nNonce;
+
+        // If nothing found after trying for a while, return -1
+        if ((nNonce & 0xffff) == 0)
+        {
+            nHashesDone = 0xffff+1;
+            return (unsigned int) -1;
+        }
+        if ((nNonce & 0xfff) == 0)
+            boost::this_thread::interruption_point();
+    }
+}
+
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, int algo)
 {
     CPubKey pubkey;
@@ -450,7 +486,8 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, int algo)
 bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
 	int algo = pblock->GetAlgo();
-    uint256 hash = pblock->GetPoWHash(algo);
+	uint256 hashPoW = pblock->GetPoWHash(algo);
+	uint256 hash = pblock->GetHash();
     uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
     CAuxPow *auxpow = pblock->auxpow.get();
@@ -459,19 +496,21 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         if (!auxpow->Check(pblock->GetHash(), pblock->GetChainID()))
             return error("AUX POW is not valid");
 
-        if (auxpow->GetParentBlockHash(pblock->GetAlgo()) > hashTarget)
-            return error("AUX POW parent hash %s is not under target %s", auxpow->GetParentBlockHash(pblock->GetAlgo()).GetHex().c_str(), hashTarget.GetHex().c_str());
+        if (auxpow->GetParentBlockHash(algo) > hashTarget)
+            return error("AUX POW parent hash %s is not under target %s", auxpow->GetParentBlockHash(algo).GetHex().c_str(), hashTarget.GetHex().c_str());
         
         // print to log
         LogPrintf("ArgentumMiner: AUX proof-of-work found; our hash: %s ; parent hash: %s ; target: %s\n",
                hash.GetHex().c_str(),
-               auxpow->GetParentBlockHash(pblock->GetAlgo()).GetHex().c_str(),
+               auxpow->GetParentBlockHash(algo).GetHex().c_str(),
                hashTarget.GetHex().c_str());
     }
     else
     {
-        if (hash > hashTarget)
+        if (hashPoW > hashTarget)
             return false;
+
+    uint256 hashBlock = pblock->GetHash();
 
         // print to log
         LogPrintf("ArgentumMiner: proof-of-work found; hash: %s ; target: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
@@ -504,6 +543,20 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     return true;
 }
 
+void static MinerWaitOnline()
+{
+    if (Params().NetworkID() != CChainParams::REGTEST) 
+    {
+        // Busy-wait for the network to come online so we don't waste time mining
+        // on an obsolete chain. In regtest mode we expect to fly solo.
+        while (vNodes.empty())
+        {
+            MilliSleep(1000);
+            boost::this_thread::interruption_point();
+        }
+    }
+}
+
 void static ScryptMiner(CWallet *pwallet)
 {
     // Each thread has its own key and counter
@@ -512,6 +565,8 @@ void static ScryptMiner(CWallet *pwallet)
 
     while(true)
     {
+        MinerWaitOnline();
+
         //
         // Create new block
         //
@@ -634,109 +689,154 @@ void static ScryptMiner(CWallet *pwallet)
     }
 }
 
-void static GenericMiner(CWallet *pwallet, int algo)
+void static BitcoinMiner(CWallet *pwallet)
 {
+    LogPrintf("BitcoinMiner started\n");
+    SetThreadPriority(THREAD_PRIORITY_LOWEST);
+    RenameThread("bitcoin-miner");
+
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
     while(true)
     {
-        //
-        // Create new block
-        //
-        unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
-        CBlockIndex* pindexPrev = chainActive.Tip();
+        MinerWaitOnline();
+		try { 
+			while (true) {
+				if (Params().NetworkID() != CChainParams::REGTEST) {
+					// Busy-wait for the network to come online so we don't waste time mining
+					// on an obsolete chain. In regtest mode we expect to fly solo.
+					while (vNodes.empty())
+						MilliSleep(1000);
+				}
 
-        auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, algo));
-        if (!pblocktemplate.get())
-            return;
-        CBlock *pblock = &pblocktemplate->block;
-        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+				//
+				// Create new block
+				//
+				unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+				CBlockIndex* pindexPrev = chainActive.Tip();
 
-        LogPrintf("Running %s miner with %u transactions in block (%u bytes)\n", 
-               GetAlgoName(algo).c_str(),
-               pblock->vtx.size(),
-               ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+				auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_SHA256D));
+				if (!pblocktemplate.get())
+					return;
+				CBlock *pblock = &pblocktemplate->block;
+				IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-        //
-        // Search
-        //
-        uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-        int64_t nStart = GetTime();
-        uint256 hash;
-		
-        while(true)
-        {
-            hash = pblock->GetPoWHash(algo);
-            if (hash <= hashTarget){
-                SetThreadPriority(THREAD_PRIORITY_NORMAL);
+				LogPrintf("Running sha256d with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+					   ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
-                LogPrintf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
-                pblock->print();
+				//
+				// Pre-build hash buffers
+				//
+				char pmidstatebuf[32+16]; char* pmidstate = alignup<16>(pmidstatebuf);
+				char pdatabuf[128+16];    char* pdata     = alignup<16>(pdatabuf);
+				char phash1buf[64+16];    char* phash1    = alignup<16>(phash1buf);
 
-                CheckWork(pblock, *pwallet, reservekey);
-                SetThreadPriority(THREAD_PRIORITY_LOWEST);
-                break;
-            }
-			// else
-			// {
-				// LogPrintf("proof-of-work generated, hash: %s\n", hash.GetHex().c_str());
-			// }
-            ++pblock->nNonce;
-            
-            // Meter hashes/sec
-            static int64_t nHashCounter;
-            if (nHPSTimerStart == 0)
-            {
-                nHPSTimerStart = GetTimeMillis();
-                nHashCounter = 0;
-            }
-            else
-                nHashCounter += 1;
-            if (GetTimeMillis() - nHPSTimerStart > 4000)
-            {
-                static CCriticalSection cs;
-                {
-                    LOCK(cs);
-                    if (GetTimeMillis() - nHPSTimerStart > 4000)
-                    {
-                        dHashesPerSec = 1000.0 * nHashCounter / (GetTimeMillis() - nHPSTimerStart);
-                        nHPSTimerStart = GetTimeMillis();
-                        nHashCounter = 0;
-                        static int64_t nLogTime;
-                        if (GetTime() - nLogTime > 30 * 60)
-                        {
-                            nLogTime = GetTime();
-                            LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
-                        }
-                    }
-                }
-            }
+				FormatHashBuffers(pblock, pmidstate, pdata, phash1);
 
-            // Check for stop or if block needs to be rebuilt
-            boost::this_thread::interruption_point();
-            if (vNodes.empty() && Params().NetworkID() != CChainParams::REGTEST)
-                break;
-            if (++pblock->nNonce >= 0xffff0000)
-                break;
-            if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
-                break;
-            if (pindexPrev != chainActive.Tip())
-                break;
+				unsigned int& nBlockTime = *(unsigned int*)(pdata + 64 + 4);
+				unsigned int& nBlockBits = *(unsigned int*)(pdata + 64 + 8);
+				unsigned int& nBlockNonce = *(unsigned int*)(pdata + 64 + 12);
 
-            // Update nTime every few seconds
-            UpdateTime(*pblock, pindexPrev);
-            // nBlockTime = ByteReverse(pblock->nTime);
-            if (TestNet())
-            {
-                // Changing pblock->nTime can change work required on testnet:
-                // nBlockBits = ByteReverse(pblock->nBits);
-                // hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-            }
-        }
-    } 
+
+				//
+				// Search
+				//
+				int64_t nStart = GetTime();
+				uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+				uint256 hashbuf[2];
+				uint256& hash = *alignup<16>(hashbuf);
+				while (true)
+				{
+					unsigned int nHashesDone = 0;
+					unsigned int nNonceFound;
+
+					// Crypto++ SHA256
+					nNonceFound = ScanHash_CryptoPP(pmidstate, pdata + 64, phash1,
+													(char*)&hash, nHashesDone);
+
+					// Check if something found
+					if (nNonceFound != (unsigned int) -1)
+					{
+						for (unsigned int i = 0; i < sizeof(hash)/4; i++)
+							((unsigned int*)&hash)[i] = ByteReverse(((unsigned int*)&hash)[i]);
+
+						if (hash <= hashTarget)
+						{
+							// Found a solution
+							pblock->nNonce = ByteReverse(nNonceFound);
+							assert(hash == pblock->GetHash());
+
+							SetThreadPriority(THREAD_PRIORITY_NORMAL);
+							CheckWork(pblock, *pwallet, reservekey);
+							SetThreadPriority(THREAD_PRIORITY_LOWEST);
+
+							// In regression test mode, stop mining after a block is found. This
+							// allows developers to controllably generate a block on demand.
+							if (Params().NetworkID() == CChainParams::REGTEST)
+								throw boost::thread_interrupted();
+
+							break;
+						}
+					}
+
+					// Meter hashes/sec
+					static int64_t nHashCounter;
+					if (nHPSTimerStart == 0)
+					{
+						nHPSTimerStart = GetTimeMillis();
+						nHashCounter = 0;
+					}
+					else
+						nHashCounter += nHashesDone;
+					if (GetTimeMillis() - nHPSTimerStart > 4000)
+					{
+						static CCriticalSection cs;
+						{
+							LOCK(cs);
+							if (GetTimeMillis() - nHPSTimerStart > 4000)
+							{
+								dHashesPerSec = 1000.0 * nHashCounter / (GetTimeMillis() - nHPSTimerStart);
+								nHPSTimerStart = GetTimeMillis();
+								nHashCounter = 0;
+								static int64_t nLogTime;
+								if (GetTime() - nLogTime > 30 * 60)
+								{
+									nLogTime = GetTime();
+									LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
+								}
+							}
+						}
+					}
+
+					// Check for stop or if block needs to be rebuilt
+					boost::this_thread::interruption_point();
+					if (vNodes.empty() && Params().NetworkID() != CChainParams::REGTEST)
+						break;
+					if (nBlockNonce >= 0xffff0000)
+						break;
+					if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60)
+						break;
+					if (pindexPrev != chainActive.Tip())
+						break;
+
+					// Update nTime every few seconds
+					UpdateTime(*pblock, pindexPrev);
+					nBlockTime = ByteReverse(pblock->nTime);
+					if (TestNet())
+					{
+						// Changing pblock->nTime can change work required on testnet:
+						nBlockBits = ByteReverse(pblock->nBits);
+						hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+					}
+				}
+			}
+		}
+		catch (...){}
+	}
 }
+
 void static ArgentumMiner(CWallet *pwallet)
 {
     LogPrintf("Argentum miner started\n");
@@ -748,13 +848,10 @@ void static ArgentumMiner(CWallet *pwallet)
         switch (miningAlgo)
         {
             case ALGO_SHA256D:
-                GenericMiner(pwallet, ALGO_SHA256D);
+                BitcoinMiner(pwallet);
                 break;
             case ALGO_SCRYPT:
                 ScryptMiner(pwallet);
-                break;
-            case ALGO_X11:
-                GenericMiner(pwallet, ALGO_X11);
                 break;
         }
     }
