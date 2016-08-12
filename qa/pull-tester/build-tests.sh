@@ -22,10 +22,10 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-DISTDIR=argentum-2.0.0
+DISTDIR=argentum-2.2.0
 
 # Cross-compile for windows first (breaking the mingw/windows build is most common)
-cd /home/dev/Desktop/argentum-master
+cd /home/administrator/ARG-DEV
 make distdir
 mkdir -p win32-build
 rsync -av $DISTDIR/ win32-build/
@@ -40,7 +40,7 @@ fi
 make -j$JOBS
 
 # And compile for Linux:
-cd /home/dev/Desktop/argentum-master
+cd /home/administrator/ARG-DEV
 make distdir
 mkdir -p linux-build
 rsync -av $DISTDIR/ linux-build/
@@ -58,41 +58,41 @@ make -j$JOBS
 if [ -d "$OUT_DIR" -a -w "$OUT_DIR" ]; then
   set +e
   # Windows:
-  cp /home/dev/Desktop/argentum-master/win32-build/src/bitcoind.exe $OUT_DIR/bitcoind.exe
-  cp /home/dev/Desktop/argentum-master/win32-build/src/test/test_bitcoin.exe $OUT_DIR/test_bitcoin.exe
-  cp /home/dev/Desktop/argentum-master/win32-build/src/qt/bitcoind-qt.exe $OUT_DIR/bitcoin-qt.exe
+  cp /home/administrator/ARG-DEV/win32-build/src/bitcoind.exe $OUT_DIR/bitcoind.exe
+  cp /home/administrator/ARG-DEV/win32-build/src/test/test_bitcoin.exe $OUT_DIR/test_bitcoin.exe
+  cp /home/administrator/ARG-DEV/win32-build/src/qt/bitcoind-qt.exe $OUT_DIR/bitcoin-qt.exe
   # Linux:
-  cp /home/dev/Desktop/argentum-master/linux-build/src/bitcoind $OUT_DIR/bitcoind
-  cp /home/dev/Desktop/argentum-master/linux-build/src/test/test_bitcoin $OUT_DIR/test_bitcoin
-  cp /home/dev/Desktop/argentum-master/linux-build/src/qt/bitcoind-qt $OUT_DIR/bitcoin-qt
+  cp /home/administrator/ARG-DEV/linux-build/src/bitcoind $OUT_DIR/bitcoind
+  cp /home/administrator/ARG-DEV/linux-build/src/test/test_bitcoin $OUT_DIR/test_bitcoin
+  cp /home/administrator/ARG-DEV/linux-build/src/qt/bitcoind-qt $OUT_DIR/bitcoin-qt
   set -e
 fi
 
 # Run unit tests and blockchain-tester on Linux:
-cd /home/dev/Desktop/argentum-master/linux-build
+cd /home/administrator/ARG-DEV/linux-build
 make check
 
 # Run RPC integration test on Linux:
-/home/dev/Desktop/argentum-master/qa/rpc-tests/wallet.sh /home/dev/Desktop/argentum-master/linux-build/src
-/home/dev/Desktop/argentum-master/qa/rpc-tests/listtransactions.py --srcdir /home/dev/Desktop/argentum-master/linux-build/src
+/home/administrator/ARG-DEV/qa/rpc-tests/wallet.sh /home/administrator/ARG-DEV/linux-build/src
+/home/administrator/ARG-DEV/qa/rpc-tests/listtransactions.py --srcdir /home/administrator/ARG-DEV/linux-build/src
 # Clean up cache/ directory that the python regression tests create
 rm -rf cache
 
 if [ $RUN_EXPENSIVE_TESTS = 1 ]; then
   # Run unit tests and blockchain-tester on Windows:
-  cd /home/dev/Desktop/argentum-master/win32-build
+  cd /home/administrator/ARG-DEV/win32-build
   make check
 fi
 
 # Clean up builds (pull-tester machine doesn't have infinite disk space)
-cd /home/dev/Desktop/argentum-master/linux-build
+cd /home/administrator/ARG-DEV/linux-build
 make clean
-cd /home/dev/Desktop/argentum-master/win32-build
+cd /home/administrator/ARG-DEV/win32-build
 make clean
 
 # TODO: Fix code coverage builds on pull-tester machine
 # # Test code coverage
-# cd /home/dev/Desktop/argentum-master
+# cd /home/administrator/ARG-DEV
 # make distdir
 # mv $DISTDIR linux-coverage-build
 # cd linux-coverage-build

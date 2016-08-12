@@ -2653,8 +2653,8 @@ Address: %4
         <translation>데이터 디렉토리 지정</translation>
     </message>
     <message>
-        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 44556)</source>
-        <translation>&lt;port&gt;의 연결에서 대기 (기본값: 13580  or testnet: 44556)</translation>
+        <source>Listen for connections on &lt;port&gt; (default: 13580 or testnet: 40555)</source>
+        <translation>&lt;port&gt;의 연결에서 대기 (기본값: 13580  or testnet: 40555)</translation>
     </message>
     <message>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
@@ -2681,8 +2681,8 @@ Address: %4
         <translation>IPv4: %s에서 수신 대기를 위해 RPC 포트%u 설정 중 오류 발생</translation>
     </message>
     <message>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 44555)</source>
-        <translation>&lt;포트&gt;의 JSON-RPC 연결에서 대기 중 (기본값: 13581 or testnet: 44555)</translation>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 13581 or testnet: 40556)</source>
+        <translation>&lt;포트&gt;의 JSON-RPC 연결에서 대기 중 (기본값: 13581 or testnet: 40556)</translation>
     </message>
     <message>
         <source>Accept command line and JSON-RPC commands</source>

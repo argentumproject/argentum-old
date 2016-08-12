@@ -5,24 +5,24 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.0.0
+!define VERSION 2.3.0
 !define COMPANY "Argentum project"
-!define URL http://www.argentum.com/
+!define URL http://www.argentum.io/
 
 # MUI Symbol Definitions
-!define MUI_ICON "/home/dev/Desktop/argentum-master/share/pixmaps/bitcoin.ico"
-!define MUI_WELCOMEFINISHPAGE_BITMAP "/home/dev/Desktop/argentum-master/share/pixmaps/nsis-wizard.bmp"
+!define MUI_ICON "/home/administrator/ARG-DEV/share/pixmaps/bitcoin.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "/home/administrator/ARG-DEV/share/pixmaps/nsis-wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "/home/dev/Desktop/argentum-master/share/pixmaps/nsis-header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "/home/administrator/ARG-DEV/share/pixmaps/nsis-header.bmp"
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Argentum Core"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Argentum"
 !define MUI_FINISHPAGE_RUN $INSTDIR\argentum-qt.exe
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "/home/dev/Desktop/argentum-master/share/pixmaps/nsis-wizard.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "/home/administrator/ARG-DEV/share/pixmaps/nsis-wizard.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
 # Included files
@@ -48,7 +48,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile /home/dev/Desktop/argentum-master/argentum-${VERSION}-win-setup.exe
+OutFile /home/administrator/ARG-DEV/argentum-${VERSION}-win-setup.exe
 !if "" == "64"
 InstallDir $PROGRAMFILES64\Argentum
 !else
@@ -59,7 +59,7 @@ XPStyle on
 BrandingText " "
 ShowInstDetails show
 VIProductVersion ${VERSION}.0
-VIAddVersionKey ProductName "Argentum Core"
+VIAddVersionKey ProductName "Argentum"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
 VIAddVersionKey CompanyWebsite "${URL}"
@@ -73,14 +73,14 @@ ShowUninstDetails show
 Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
-    File /home/dev/Desktop/argentum-master/release/argentum-qt.exe
-    File /oname=COPYING.txt /home/dev/Desktop/argentum-master/COPYING
-    File /oname=readme.txt /home/dev/Desktop/argentum-master/doc/README_windows.txt
+    File /home/administrator/ARG-DEV/release/argentum-qt.exe
+    File /oname=COPYING.txt /home/administrator/ARG-DEV/COPYING
+    File /oname=readme.txt /home/administrator/ARG-DEV/doc/README_windows.txt
     SetOutPath $INSTDIR\daemon
-    File /home/dev/Desktop/argentum-master/release/argentumd.exe
-    File /home/dev/Desktop/argentum-master/release/argentum-cli.exe
+    File /home/administrator/ARG-DEV/release/argentumd.exe
+    File /home/administrator/ARG-DEV/release/argentum-cli.exe
     SetOutPath $INSTDIR\doc
-    File /r /home/dev/Desktop/argentum-master/doc\*.*
+    File /r /home/administrator/ARG-DEV/doc\*.*
     SetOutPath $INSTDIR
     WriteRegStr HKCU "${REGKEY}\Components" Main 1
 

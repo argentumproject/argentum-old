@@ -421,9 +421,7 @@ miner.o: miner.cpp /usr/include/stdc-predef.h miner.h \
  /usr/include/boost/date_time/posix_time/posix_time_config.hpp \
  /usr/include/boost/limits.hpp /usr/include/c++/5/limits \
  /usr/include/boost/config/no_tr1/cmath.hpp /usr/include/c++/5/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
- /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
- /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
  /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
  /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
  /usr/include/x86_64-linux-gnu/bits/inf.h \
@@ -1103,10 +1101,7 @@ miner.o: miner.cpp /usr/include/stdc-predef.h miner.h \
  /usr/include/boost/preprocessor/iteration/local.hpp \
  /usr/include/boost/preprocessor/iteration/self.hpp \
  /usr/include/boost/signals2/detail/signal_template.hpp \
- /usr/include/openssl/rand.h txmempool.h auxpow.h wallet.h crypter.h \
- keystore.h ui_interface.h /usr/include/boost/signals2/last_value.hpp \
- walletdb.h db.h /usr/include/db_cxx.h /usr/include/db.h \
- /usr/include/inttypes.h
+ /usr/include/openssl/rand.h txmempool.h auxpow.h
 
 /usr/include/stdc-predef.h:
 
@@ -2083,10 +2078,6 @@ allocators.h:
 /usr/include/c++/5/cmath:
 
 /usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
 /usr/include/x86_64-linux-gnu/bits/huge_val.h:
 
@@ -3623,23 +3614,3 @@ threadsafety.h:
 txmempool.h:
 
 auxpow.h:
-
-wallet.h:
-
-crypter.h:
-
-keystore.h:
-
-ui_interface.h:
-
-/usr/include/boost/signals2/last_value.hpp:
-
-walletdb.h:
-
-db.h:
-
-/usr/include/db_cxx.h:
-
-/usr/include/db.h:
-
-/usr/include/inttypes.h:

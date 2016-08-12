@@ -18,7 +18,7 @@
 #define CLIENT_VERSION_MAJOR 2
 
 /* Minor version */
-#define CLIENT_VERSION_MINOR 0
+#define CLIENT_VERSION_MINOR 3
 
 /* Build revision */
 #define CLIENT_VERSION_REVISION 0
@@ -199,13 +199,13 @@
 #define HAVE_WORKING_BOOST_SLEEP_FOR 1
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "info@argentum.com"
+#define PACKAGE_BUGREPORT "info@argetoshi.org"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "Argentum Core"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Argentum Core 2.0.0"
+#define PACKAGE_STRING "Argentum Core 2.3.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "argentum"
@@ -214,7 +214,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.0.0"
+#define PACKAGE_VERSION "2.3.0"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
