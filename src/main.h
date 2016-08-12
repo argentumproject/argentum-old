@@ -39,16 +39,16 @@ class CInv;
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 10000000;
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
-static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 500000;
+static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 10000000;
 static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
-static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 17000;
+static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 30000;
 /** The maximum size for transactions we're willing to relay/mine */
 static const unsigned int MAX_STANDARD_TX_SIZE = 100000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/10;
 /** The maximum number of orphan transactions kept in memory */
-static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
+/** static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100; */
 /** The maximum number of orphan blocks kept in memory */
 static const unsigned int MAX_ORPHAN_BLOCKS = 750;
 /** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
@@ -74,13 +74,13 @@ static const int MAX_SCRIPTCHECK_THREADS = 16;
 /** -par default (number of script-checking threads, 0 = auto) */
 static const int DEFAULT_SCRIPTCHECK_THREADS = 0;
 /** Number of blocks that can be requested at any given time from a single peer. */
-static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 128;
+static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 512;
 /** Timeout in seconds before considering a block download peer unresponsive. */
-static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 60;
+static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 30;
 
-static const int V3_FORK = 1840000;
-static const int MAX_BLOCK_ALGO_COUNT = 3;
-const int64_t multiAlgoDiffChangeTarget = 1840000; // block where multi-algo work weighting starts 145000
+static const int mAlgo_FORK = 1930000; // Block where multi-algoritm mining starts
+static const int MAX_BLOCK_ALGO_COUNT = 3; // Maximum number block accepted by the same algorithm
+const int64_t multiAlgoDiffChangeTarget = 1930000;
 
 /** AuxPow Block versions for sanity checks. */
 /** bare AuxPoW block version which will be modulated further. */
@@ -201,6 +201,7 @@ const CBlockIndex* GetLastBlockIndexForAlgo(const CBlockIndex* pindex, int algo)
 unsigned int GetNextWorkRequired_Legacy(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo);
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo);
 unsigned int GetNextWRKReq(const CBlockIndex* pindexLast, const CBlock *pblock, int algo);
+unsigned int GetNextWorkRequiredM(const CBlockIndex* pindexLast, const CBlockHeader *pblock, int algo);
 
 void UpdateTime(CBlockHeader& block, const CBlockIndex* pindexPrev);
 
@@ -334,7 +335,7 @@ inline bool AllowFree(double dPriority)
 {
     // Large (in bytes) low-priority (new, small-coin) transactions
     // need a fee.
-        return dPriority > 100 * COIN * 1440 / 250; // Argentum: 1440 blocks found a day. Priority cutoff is 100 argentum day / 250 bytes.
+        return dPriority > 100 * COIN * 1920 / 250; // Argentum: 1920 blocks found a day. Priority cutoff is 100 argentum day / 250 bytes.
     }
 
 /** Get the maturity depth for coinbase transactions at a given height.
@@ -908,8 +909,6 @@ public:
             // work factor = absolute work ratio * optimisation factor
             case ALGO_SCRYPT:
                 return 1024 * 4;
-            case ALGO_X11:
-                return 128 * 8;
             default:
                 return 1;
         }
@@ -934,7 +933,7 @@ public:
     CBigNum GetBlockWorkAdjusted() const
     {
         CBigNum bnRes;
-		if ((TestNet() && (nHeight >= 1)) || (!TestNet() && nHeight >= V3_FORK)) 
+		if ((TestNet() && (nHeight >= 1)) || (!TestNet() && nHeight >= mAlgo_FORK)) 
 		{
 			// Adjusted Block Work is the Sum of work of this block and the most recent work of one block of each algo
 			CBigNum nBlockWork = GetBlockWork();

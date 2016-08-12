@@ -15,34 +15,29 @@
 
 #include <stdint.h>
 
-enum {    
-	ALGO_SCRYPT  = 1,
-    ALGO_SHA256D = 2,
-    ALGO_X11     = 3,
-    
-    NUM_ALGOS 
-};
+enum {
+    ALGO_SHA256D = 0,
+    ALGO_SCRYPT  = 1,
+    NUM_ALGOS };
 
 enum
 {
-    BLOCK_VERSION_DEFAULT = 1,
+    // primary version
+    BLOCK_VERSION_DEFAULT        = 1,
 
-     // algo
-    BLOCK_VERSION_ALGO           	= (1 << 9),
-    BLOCK_VERSION_SHA256D        	= (2 << 9),
-    BLOCK_VERSION_X11 				= (3 << 9),
+    // algo
+    BLOCK_VERSION_ALGO           = (7 << 9),
+    BLOCK_VERSION_SHA256D        = (1 << 9),
 };
 
 inline int GetAlgo(int nVersion)
 {
     switch (nVersion & BLOCK_VERSION_ALGO)
     {
-        case 0:
+        case 1:
             return ALGO_SCRYPT;
         case BLOCK_VERSION_SHA256D:
             return ALGO_SHA256D;
-        case BLOCK_VERSION_X11:
-            return ALGO_X11;
     }
     return ALGO_SCRYPT;
 }
@@ -51,12 +46,10 @@ inline std::string GetAlgoName(int Algo)
 {
     switch (Algo)
     {
-        case ALGO_SCRYPT:
-            return std::string("scrypt");
         case ALGO_SHA256D:
             return std::string("sha256d");
-        case ALGO_X11:
-            return std::string("x11");
+        case ALGO_SCRYPT:
+            return std::string("scrypt");
     }
     return std::string("unknown");       
 }
@@ -76,7 +69,7 @@ int ReadWriteAuxPow(Stream& s, const boost::shared_ptr<CAuxPow>& auxpow, int nTy
 // primary version
 // static const int BLOCK_VERSION_DEFAULT = 		(1 << 0);
 static const int BLOCK_VERSION_AUXPOW = 		(1 << 8);
-static const int BLOCK_VERSION_CHAIN_START = 	(1 << 16);
+static const int BLOCK_VERSION_CHAIN_START = 		(1 << 16);
 static const int BLOCK_VERSION_CHAIN_END = 		(1 << 30);
 static const int BLOCK_VERSION_BASE_MASK = 0x000000ff;
 
@@ -89,7 +82,7 @@ static const int AUXPOW_START_MAINNET = Version4StartHeight;
 static const int AUXPOW_START_TESTNET = Version4StartHeight;
 
 /** No amount larger than this (in satoshi) is valid */
-static const int64_t MAX_MONEY = 64000000  * COIN; // Argentum: maximum of 100B coins (given some randomness), max transaction 10,000,000,000
+static const int64_t MAX_MONEY = 64000000  * COIN; // Argentum: maximum of 64M coins.
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */
@@ -477,15 +470,8 @@ public:
         switch (algo)
         {
             case ALGO_SHA256D:
-                return Hash(BEGIN(nVersion), BEGIN(nNonce));
+                return GetHash();
             case ALGO_SCRYPT:
-            {
-                uint256 thash;
-                // Caution: scrypt_1024_1_1_256 assumes fixed length of 80 bytes
-                scrypt_1024_1_1_256(BEGIN(nVersion), BEGIN(thash));
-                return thash;
-            }
-            case ALGO_X11:
             {
                 uint256 thash;
                 // Caution: scrypt_1024_1_1_256 assumes fixed length of 80 bytes
