@@ -58,7 +58,7 @@ addnode=162.251.173.179
 addnode=24.141.165.231
 addnode=162.255.117.105
 
-# Installing libdb5.1 onto a system with libdb4.8 already installed. (For AUXPOW and mining nodes)
+# Installing libdb5.1 onto a system with libdb4.8 already installed. (For building from source)
 From https://bitcointalk.org/index.php?topic=1432608.msg15382962#msg15382962
 
 BITCOIN_ROOT=$(pwd)
