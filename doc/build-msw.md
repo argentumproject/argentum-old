@@ -65,7 +65,7 @@ change 'MAKE' env. variable from 'C:\MinGW32\bin\mingw32-make.exe' to '/c/MinGW3
 	./config
 	make
 
-Berkeley DB (see end of document for important info ragarding BDB)
+Berkeley DB (see end of document for important info regarding BDB)
 -----------
 MSYS shell:
 
