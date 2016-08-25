@@ -143,7 +143,7 @@ repackage gitian builds for release as stand-alone zip/tar/installer exe
 
 * create SHA256SUMS for builds, and PGP-sign it
 
-* update argentum.com version
+* update argentum.io version
   make sure all OS download links go to the right versions
   
 * update forum version
@@ -213,10 +213,10 @@ Hash: SHA256
 
 - Announce the release:
 
-  - Add the release to argentum.com
+  - Add the release to argentum.io
 
   - Announce on reddit /r/argentum, /r/argentumdev
 
-  - Release sticky on discuss argentum: https://discuss.argentum.com/categories/announcements
+  - Release sticky on discuss argentum: https://www.github.com/argentumproject/
 
 - Celebrate 

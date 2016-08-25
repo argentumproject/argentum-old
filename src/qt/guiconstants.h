@@ -42,7 +42,7 @@ static const int MAX_PAYMENT_REQUEST_SIZE = 50000; // bytes
 #define SPINNER_FRAMES 35
 
 #define QAPP_ORG_NAME "Argentum"
-#define QAPP_ORG_DOMAIN "argentum.com"
+#define QAPP_ORG_DOMAIN "argentum.io"
 #define QAPP_APP_NAME_DEFAULT "Argentum-Qt"
 #define QAPP_APP_NAME_TESTNET "Argentum-Qt-testnet"
 

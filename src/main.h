@@ -39,10 +39,10 @@ class CInv;
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_SIZE = 10000000;
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
-static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 10000000;
+static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 5000000;
 static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
-static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 30000;
+static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 27000;
 /** The maximum size for transactions we're willing to relay/mine */
 static const unsigned int MAX_STANDARD_TX_SIZE = 100000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
@@ -335,7 +335,7 @@ inline bool AllowFree(double dPriority)
 {
     // Large (in bytes) low-priority (new, small-coin) transactions
     // need a fee.
-        return dPriority > 100 * COIN * 1920 / 250; // Argentum: 1920 blocks found a day. Priority cutoff is 100 argentum day / 250 bytes.
+        return dPriority > COIN * 1920 / 250; // Argentum: 1920 blocks found a day / 250 bytes.
     }
 
 /** Get the maturity depth for coinbase transactions at a given height.
