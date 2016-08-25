@@ -112,7 +112,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY] = esk;
 
         // Convert the pnSeeds array into usable address objects.
-	vSeeds.push_back(CDNSSeedData("arg.transacx.io", "alt40.transacx.io"));
+	    vSeeds.push_back(CDNSSeedData("arg.transacx.io", "alt40.transacx.io"));
+        vSeeds.push_back(CDNSSeedData("seed 1", "52.58.50.77"));
         
 	for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
         {

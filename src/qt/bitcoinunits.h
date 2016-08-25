@@ -25,11 +25,8 @@ public:
     enum Unit   //Note: preserve positions in order to preserve existing settings
     {
         ARG,
-        //formerly mARG
-        //formerly uARG
-        MARG = 3,
-        kARG = 4,
-        Argenti = 5
+        mARG,
+        uARG,
     };
 
     //! @name Static API

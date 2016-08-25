@@ -16,10 +16,9 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(MARG);
-    unitlist.append(kARG);
     unitlist.append(ARG);
-    unitlist.append(Argenti);
+    unitlist.append(mARG);
+    unitlist.append(uARG);
     return unitlist;
 }
 
@@ -27,10 +26,9 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case MARG:
-    case kARG:
     case ARG:
-    case Argenti:
+    case mARG:
+    case uARG:
         return true;
     default:
         return false;
@@ -41,10 +39,9 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
-    case MARG: return QString("MARG");
-    case kARG: return QString("kARG");
     case ARG: return QString("ARG");
-    case Argenti: return QString("Argenti");
+    case mARG: return QString("mARG");
+    case uARG: return QString("uARG");
     default: return QString("???");
     }
 }
@@ -53,10 +50,9 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case MARG: return QString("Mega-Argentum (1,000,000 ARG)");
-    case kARG: return QString("Kilo-Argentum (1000 ARG)");
     case ARG: return QString("Argentum");
-    case Argenti: return QString("Argenti (1 / 100,000,000");
+    case mARG: return QString("Milli-Argentum (100,000 ARG)");
+    case uARG: return QString("Micro-Argentum (100 ARG)");
     default: return QString("???");
     }
 }
@@ -65,11 +61,10 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case MARG: return Q_INT64_C(100000000000000);
-    case kARG: return Q_INT64_C(100000000000);
-    case ARG:  return Q_INT64_C(100000000);
-    case Argenti: return Q_INT64_C(1);
-    default:    return Q_INT64_C(100000000);
+    case ARG:  return 100000000;
+    case mARG: return 100000;
+    case uARG: return 100;
+    default:    return 100000000;
     }
 }
 
@@ -77,10 +72,9 @@ qint64 BitcoinUnits::maxAmount(int unit)
 {
     switch(unit)
     {
-    case MARG: return Q_INT64_C(900000);
-    case kARG: return Q_INT64_C(900000000);
-    case ARG:  return Q_INT64_C(900000000000);    //less than the coin supply until the year 2170
-    case Argenti: return Q_INT64_C(9000000000000000000); // Slightly under max value for int64
+    case ARG:  return Q_INT64_C(64000000);
+    case mARG: return Q_INT64_C(64000000000);
+    case uARG: return Q_INT64_C(64000000000000);
     default:   return 0;
     }
 }
@@ -89,10 +83,9 @@ int BitcoinUnits::amountDigits(int unit)
 {
     switch(unit)
     {
-    case MARG: return 6;  // 900,000 (# digits, without commas)
-    case kARG: return 9;  // 900,000,000
-    case ARG:  return 12; // 900,000,000,000
-    case Argenti: return 19; // 9,000,000,000,000,000,000
+    case ARG:  return 8; // 64,000,000 (# digits, without commas)
+    case mARG: return 11;  // 64,000,000,000
+    case uARG: return 14;  // 64,000,000,000,000
     default: return 0;
     }
 }
@@ -101,10 +94,9 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case MARG: return 14;
-    case kARG: return 11;
     case ARG: return 8;
-    case Argenti: return 0;
+    case mARG: return 5;
+    case uARG: return 2;
     default: return 0;
     }
 }

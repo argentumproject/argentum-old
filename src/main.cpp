@@ -1320,24 +1320,7 @@ static const int64_t nTargetSpacing2 = 60; // Argentum: 60 Seconds
 //
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime, int algo)
 {
-    const CBigNum &bnLimit = Params().ProofOfWorkLimit(algo);
-    // Testnet has min-difficulty blocks
-    // after nTargetSpacing*2 time between blocks:
-    if (TestNet() && nTime > nTargetSpacing*2)
-        return bnLimit.GetCompact();
-
-    CBigNum bnResult;
-    bnResult.SetCompact(nBase);
-    while (nTime > 0 && bnResult < bnLimit)
-    {
-            // Maximum 10% adjustment...
-            bnResult = (bnResult * 110) / 100;
-            // ... in best-case exactly 4-times-normal target time
-            nTime -= nTargetTimespan*4;
-    }
-    if (bnResult > bnLimit)
-        bnResult = bnLimit;
-    return bnResult.GetCompact();
+    return Params().ProofOfWorkLimit(ALGO_SHA256D).GetCompact();
 }
 
 unsigned int GetNextWorkRequired_Legacy(const CBlockIndex* pindexLast, const CBlock *pblock, int algo)
@@ -4066,6 +4049,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(pfrom->strSubVer, 256);
             pfrom->cleanSubVer = SanitizeString(pfrom->strSubVer);
+
+            if (
+                (pfrom->cleanSubVer == "/Argetoshi:1.8.3/") || 
+                (pfrom->cleanSubVer == "/Argetoshi:2.0.0/") || 
+                (pfrom->cleanSubVer == "/Argetoshi:2.1.0/") ||
+                (pfrom->cleanSubVer == "/Argetoshi:2.2.0/") 
+            )
+            {
+                // disconnect from peers older than this client version
+                LogPrintf("partner %s using obsolete client sub version %s; disconnecting\n", pfrom->addr.ToString(), pfrom->cleanSubVer);
+                pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE,
+                    strprintf("Version must be %d or greater", MIN_PEER_CLIENT_VERSION));
+                pfrom->fDisconnect = true;
+                return false;
+            }
         }
         if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
