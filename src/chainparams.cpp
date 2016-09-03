@@ -111,6 +111,9 @@ public:
         std::vector<unsigned char> esk = list_of(0xC3)(0xB6)(0xC2)(0xD8);
         base58Prefixes[EXT_SECRET_KEY] = esk;
 
+        std::vector<unsigned char> ect = list_of(0x8000002D); // Argentum BIP 44 index is 45
+        base58Prefixes[EXT_COIN_TYPE]  = ect;
+
         // Convert the pnSeeds array into usable address objects.
 	    vSeeds.push_back(CDNSSeedData("arg.transacx.io", "alt40.transacx.io"));
         vSeeds.push_back(CDNSSeedData("seed 1", "52.58.50.77"));
@@ -182,6 +185,8 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = epk;
         std::vector<unsigned char> esk = list_of(0x04)(0x35)(0x75)(0xA4);
         base58Prefixes[EXT_SECRET_KEY] = esk;
+        std::vector<unsigned char> ect = list_of(0x80000001); // Testnet default for all coin's
+        base58Prefixes[EXT_COIN_TYPE]  = ect;
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
