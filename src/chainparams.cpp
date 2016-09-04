@@ -96,19 +96,19 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0xc7e4af4190d3eb28d4e61261fb1b47e13d7efd6d7279c75ae6a91c2987d43d53"));
 
         // Workaround for Boost not being quite compatible with C++11;
-        std::vector<unsigned char> pka = list_of(23);
+        std::vector<unsigned char> pka = list_of(23);   // 0x17
         base58Prefixes[PUBKEY_ADDRESS] = pka;
         
-        std::vector<unsigned char> sca = list_of(5);
+        std::vector<unsigned char> sca = list_of(5);    // 0x5
         base58Prefixes[SCRIPT_ADDRESS] = sca;
         
-        std::vector<unsigned char> sk  = list_of(151);
+        std::vector<unsigned char> sk  = list_of(151);  // 0x97
         base58Prefixes[SECRET_KEY]     = sk;
         
-        std::vector<unsigned char> epk = list_of(0xC3)(0xB6)(0xCC)(0x77);
+        std::vector<unsigned char> epk = list_of(0x04)(0x88)(0xB2)(0x1E); // xpub
         base58Prefixes[EXT_PUBLIC_KEY] = epk;
         
-        std::vector<unsigned char> esk = list_of(0xC3)(0xB6)(0xC2)(0xD8);
+        std::vector<unsigned char> esk = list_of(0x04)(0x88)(0xAD)(0xE4); // xprv
         base58Prefixes[EXT_SECRET_KEY] = esk;
 
         std::vector<unsigned char> ect = list_of(0x8000002D); // Argentum BIP 44 index is 45

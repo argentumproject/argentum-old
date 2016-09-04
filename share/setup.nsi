@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 2.3.2
+!define VERSION 2.3.3
 !define COMPANY "Argentum Project"
 !define URL http://www.argentum.io/
 
