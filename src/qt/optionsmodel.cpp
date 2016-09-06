@@ -66,7 +66,7 @@ void OptionsModel::Init()
     bDisplayAddresses = settings.value("bDisplayAddresses", false).toBool();
 
     if (!settings.contains("strThirdPartyTxUrls"))
-        settings.setValue("strThirdPartyTxUrls", "https://chainz.cryptoid.info/arg/%s");
+        settings.setValue("strThirdPartyTxUrls", "https://chainz.cryptoid.info/arg/tx.dws?%s");
     strThirdPartyTxUrls = settings.value("strThirdPartyTxUrls", "").toString();
 
     if (!settings.contains("fCoinControlFeatures"))
