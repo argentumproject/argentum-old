@@ -6,6 +6,10 @@
 We have a new website; https://www.argentum.io
 We are using a new repo; https://www.github.com/argentumproject/argentum
 
+## Version 2.4 release; September 18, 2016
+- Changes max sequential blocks found per algorithm from 3 to 6
+- Fork height set at Block # 2,032,000
+
 Specifications
 
 ## General

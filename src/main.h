@@ -80,6 +80,8 @@ static const unsigned int BLOCK_DOWNLOAD_TIMEOUT = 30;
 
 static const int mAlgo_FORK = 1930000; // Block where multi-algoritm mining starts
 static const int MAX_BLOCK_ALGO_COUNT = 3; // Maximum number block accepted by the same algorithm
+static const int MAX_BLOCK_ALGO_COUNT_V2_START = 2032000;
+static const int MAX_BLOCK_ALGO_COUNT_V2 = 6; // Maximum number block accepted by the same algorithm version 2
 const int64_t multiAlgoDiffChangeTarget = 1930000;
 
 /** AuxPow Block versions for sanity checks. */
@@ -895,10 +897,6 @@ public:
     int GetAlgoWorkFactor() const 
     {
         if (!TestNet() && (nHeight < multiAlgoDiffChangeTarget))
-        {
-            return 1;
-        }
-        if (TestNet() && (nHeight < 100))
         {
             return 1;
         }

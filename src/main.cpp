@@ -2882,26 +2882,38 @@ bool AcceptBlockHeader(CBlockHeader& block, CValidationState& state, CBlockIndex
             return state.DoS(10, error("AcceptBlock() : prev block not found"), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         nHeight = pindexPrev->nHeight+1;
-
             // Check count of sequence of the same algorithm
+        if (nHeight > mAlgo_FORK)
+        {
+            int nAlgo = block.GetAlgo();
+            int nAlgoCount = 1;
+            CBlockIndex* piPrev = pindexPrev;
 
-    if (TestNet() || (nHeight > mAlgo_FORK))
-    {
-        int nAlgo = block.GetAlgo();
-        int nAlgoCount = 1;
-        CBlockIndex* piPrev = pindexPrev;
-        while (piPrev && (nAlgoCount <= MAX_BLOCK_ALGO_COUNT))
-        {
-            if (piPrev->GetAlgo() != nAlgo)
-                break;
-            nAlgoCount++;
-            piPrev = piPrev->pprev;
-        }
-        if (nAlgoCount > MAX_BLOCK_ALGO_COUNT)
-        {
+            // Maximum sequence count allowed
+            int nMaxSeqCount;
+            if (nHeight > MAX_BLOCK_ALGO_COUNT_V2_START)
+                nMaxSeqCount = MAX_BLOCK_ALGO_COUNT_V2;
+            else
+                if (nHeight > mAlgo_FORK)
+                    nMaxSeqCount = MAX_BLOCK_ALGO_COUNT;
+
+            while (piPrev!=NULL && (nAlgoCount <= nMaxSeqCount))
+            {
+                if (piPrev->GetAlgo() != nAlgo)
+                    break;
+                nAlgoCount++;
+                piPrev = piPrev->pprev;
+            }
+
+            if(fDebug)
+            {
+                LogPrintf("MaxSequentialAlgoRule DEBUG: nHeight: %d, nAlgoCount: %d, nMaxSeqCount: %d\n", nHeight, nAlgoCount, nMaxSeqCount);
+            }
+            if (nAlgoCount > nMaxSeqCount)
+            {
             return state.DoS(100, error("AcceptBlock() : Too Many Blocks From the Same Algo"), REJECT_INVALID, "algo-toomany");
+            }
         }
-    }
 
         LogPrintf("Checking Block %d with Algo %d \n", nHeight, block.GetAlgo());
         if (block.GetAlgo() == ALGO_SCRYPT)  { LogPrintf("Algo is Scrypt \n ");}
