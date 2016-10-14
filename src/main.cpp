@@ -4066,7 +4066,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 (pfrom->cleanSubVer == "/Argetoshi:1.8.3/") || 
                 (pfrom->cleanSubVer == "/Argetoshi:2.0.0/") || 
                 (pfrom->cleanSubVer == "/Argetoshi:2.1.0/") ||
-                (pfrom->cleanSubVer == "/Argetoshi:2.2.0/") 
+                (pfrom->cleanSubVer == "/Argetoshi:2.2.0/") ||
+                (pfrom->cleanSubVer == "/Argetoshi:2.3.0/") ||
+                (pfrom->cleanSubVer == "/Argetoshi:2.3.1/") ||
+                (pfrom->cleanSubVer == "/Argetoshi:2.3.2/") ||
+                (pfrom->cleanSubVer == "/Argetoshi:2.3.3/") 
             )
             {
                 // disconnect from peers older than this client version
