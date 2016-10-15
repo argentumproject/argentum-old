@@ -49,14 +49,10 @@ algo=sha256d
 ##Nodes
 Add these nodes
 
-addnode=108.61.10.90  
-addnode=138.201.65.88  
-addnode=148.251.19.213  
 addnode=149.210.234.234  
 addnode=157.161.128.63  
 addnode=167.160.36.126  
 addnode=192.99.35.133  
-addnode=37.59.43.20  
 addnode=52.50.240.238  
 addnode=54.246.128.222  
 addnode=96.236.219.30  
@@ -71,6 +67,12 @@ addnode=144.76.71.141
 addnode=87.98.185.244  
 addnode=98.115.147.74  
 addnode=162.255.117.105  
+addnode=69.197.177.18  
+addnode=74.111.112.108  
+addnode=104.200.153.94
+addnode=46.105.63.132  
+addnode=87.98.185.244
+addnode=92.3.46.14  
 
 # Installing libdb5.1 onto a system with libdb4.8 already installed. (For building from source)
 From https://bitcointalk.org/index.php?topic=1432608.msg15382962#msg15382962
