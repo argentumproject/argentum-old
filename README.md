@@ -3,8 +3,10 @@
 **Argentum** is the Latin name for the element silver. It is the perfect name to represent this currency and the potential it has with a dedicated development team. Argentum is **fast, unique, and secure**. We have learned from many of the past crypto-currencies and created one that can rival any. Argentum brings innovation and experimentation that **pushes the limits**.
 
 ## Important information:
-We have a new website; https://www.argentum.io
-We are using a new repo; https://www.github.com/argentumproject/argentum
+We have a new website; https://www.argentum.io 
+We are using a new repo; https://www.github.com/argentumproject/argentum 
+
+###RELEASES - https://github.com/argentumproject/argentum/releases
 
 ## Version 2.4 release; September 18, 2016
 - Changes max sequential blocks found per algorithm from 3 to 6
