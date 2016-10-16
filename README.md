@@ -8,6 +8,12 @@ We are using a new repo; https://www.github.com/argentumproject/argentum
 
 ###RELEASES - https://github.com/argentumproject/argentum/releases
 
+## Version 2.4.2
+- Change protocol version to 1050000
+
+## Version 2.4.1
+- Disconnect obsolete peers
+
 ## Version 2.4 release; September 18, 2016
 - Changes max sequential blocks found per algorithm from 3 to 6
 - Fork height set at Block # 2,032,000
