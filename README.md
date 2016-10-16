@@ -79,7 +79,7 @@ addnode=69.197.177.18
 addnode=74.111.112.108  
 addnode=104.200.153.94
 addnode=46.105.63.132  
-addnode=87.98.185.244
+addnode=87.98.185.244  
 addnode=92.3.46.14  
 
 # Installing libdb5.1 onto a system with libdb4.8 already installed. (For building from source)
