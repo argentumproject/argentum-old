@@ -8,6 +8,10 @@ We are using a new repo; https://www.github.com/argentumproject/argentum
 
 ###RELEASES - https://github.com/argentumproject/argentum/releases
 
+## Version 2.4.3
+- Add checkpoint block
+- Change minimum peer version to 2.4.1
+
 ## Version 2.4.2
 - Change protocol version to 1050000
 
