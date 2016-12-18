@@ -8,6 +8,10 @@ We are using a new repo; https://www.github.com/argentumproject/argentum
 
 ###RELEASES - https://github.com/argentumproject/argentum/releases
 
+###Electrum - https://github.com/argentumproject/electrum-arg/releases
+
+###Electrum Server - https://github.com/argentumproject/electrum-arg-server
+
 ## Version 2.4.3
 - Add checkpoint block
 - Change minimum peer version to 2.4.1
@@ -53,7 +57,7 @@ Listen Port: 13580
 
 RPC Port: 13581
 
-## Conf Settings
+## Mining Settings
 Use this to set the algorithm to SHA256D for mining (default is scrypt)  
 
 algo=sha256d
@@ -104,7 +108,7 @@ tar -xzvf db-5.1.29.NC.tar.gz
 > cd db-5.1.29.NC/build_unix/
 - Note: Do a static build so that it can be embedded into the exectuable, instead of having to find a .so at runtime
 > ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
-make install
+> make install
 
 - Configure Argentum Core to use our own-built instance of BDB
 > cd $BITCOIN_ROOT
