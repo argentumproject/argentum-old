@@ -62,9 +62,9 @@ static const unsigned int BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
 /** The pre-allocation chunk size for rev?????.dat files (since 0.8) */
 static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 /** Dust Soft Limit, allowed with additional fee per output */
-static const int64_t DUST_SOFT_LIMIT = COIN;
-/** Dust Hard Limit, ignored as wallet inputs (mininput default) */
-static const int64_t DUST_HARD_LIMIT = 1000000;
+static const int64_t DUST_SOFT_LIMIT = 50000;
+/** Dust Hard Limit, ignored as wallet inputs (mininput default)
+static const int64_t DUST_HARD_LIMIT = 1000000; was never used in Argentum implementation */
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
 static const int COINBASE_MATURITY = 10;
 /** Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp. */
