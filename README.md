@@ -13,9 +13,9 @@ We are using a new repo; https://www.github.com/argentumproject/argentum
 ###Electrum Server - https://github.com/argentumproject/electrum-arg-server
 
 ## Version 2.4.4
--Minimum transaction fee and minimum relay transaction fee from 0.00500000 to 0.00050000 
--Bring the dust limit in line with Bitcoin and most cryptocurrencies. With a relay transaction fee of 0.00050000 the dust limit is 0.00027300; anything less than that and the transaction will be rejected. 
--Change the dust soft limit to 0.00050000. Any amount of ARG less than 0.00050000 will incur an additional fee of 0.00050000. 
+- Minimum transaction fee and minimum relay transaction fee from 0.00500000 to 0.00050000 
+- Bring the dust limit in line with Bitcoin and most cryptocurrencies. With a relay transaction fee of 0.00050000 the dust limit is 0.00027300; anything less than that and the transaction will be rejected. 
+- Change the dust soft limit to 0.00050000. Any amount of ARG less than 0.00050000 will incur an additional fee of 0.00050000. 
 
 ## Version 2.4.3
 - Add checkpoint block
