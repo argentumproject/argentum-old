@@ -122,8 +122,3 @@ From https://bitcointalk.org/index.php?topic=1432608.msg15382962#msg15382962
 > ./configure LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/"  
 > make
 
-## Donation Addresses
-Please Donate a little to the cause!
-> ARG Donation Address: ATM1imaiPtFT5K8F2tsPh4RSpw7ADk9a8G
-
-> BTC Donation Address: 1LxXw9CRunb5mJfa99aTWQMCqmbroVBUxi
