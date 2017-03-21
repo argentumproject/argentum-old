@@ -175,15 +175,15 @@ public:
 		
         // Boost sucks, and should not be used. Workaround for Boost not being compatible with C++11;
         
-        std::vector<unsigned char> pka = list_of(113);
+        std::vector<unsigned char> pka = list_of(111); // 0x6F
         base58Prefixes[PUBKEY_ADDRESS] = pka;
-        std::vector<unsigned char> sca = list_of(196);
+        std::vector<unsigned char> sca = list_of(196); // 0xC4
         base58Prefixes[SCRIPT_ADDRESS] = sca;
-        std::vector<unsigned char> sk  = list_of(241);
+        std::vector<unsigned char> sk  = list_of(239); // 0xEF
         base58Prefixes[SECRET_KEY]     = sk;
-        std::vector<unsigned char> epk = list_of(0x04)(0x35)(0xD1)(0xDF);
+        std::vector<unsigned char> epk = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_PUBLIC_KEY] = epk;
-        std::vector<unsigned char> esk = list_of(0x04)(0x35)(0x75)(0xA4);
+        std::vector<unsigned char> esk = list_of(0x04)(0x35)(0x83)(0x94);
         base58Prefixes[EXT_SECRET_KEY] = esk;
         std::vector<unsigned char> ect = list_of(0x80000001); // Testnet default for all coin's
         base58Prefixes[EXT_COIN_TYPE]  = ect;
@@ -202,7 +202,7 @@ public:
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
         pchMessageStart[3] = 0xda;
-        nSubsidyHalvingInterval = 150;
+        //nSubsidyHalvingInterval = 150;
         bnProofOfWorkLimit[ALGO_SHA256D] = CBigNum(~uint256(0) >> 1);
         bnProofOfWorkLimit[ALGO_SCRYPT]  = CBigNum(~uint256(0) >> 1);
         genesis.nTime = 1296688602;
