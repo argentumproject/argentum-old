@@ -1,4 +1,5 @@
-*Copyright Bitcoin, Litecoin, DigitalCoin, Argentum Developers 2013-2016 | [Website](http://www.argentum.io)*
+*Copyright Bitcoin, Litecoin, DigitalCoin, Argentum Developers 2013-2016 | [Website](http://www.argentum.io)*  
+*Contact support@argentum.io*
 
 **Argentum** is the Latin name for the element silver. It is the perfect name to represent this currency and the potential it has with a dedicated development team. Argentum is **fast, unique, and secure**. We have learned from many of the past crypto-currencies and created one that can rival any. Argentum brings innovation and experimentation that **pushes the limits**.
 
